@@ -1,0 +1,448 @@
+/**************************************************************
+ *
+ *  Copyright (c) 2018 Public Broadcasting Service 
+ *  Contact: <warn@pbs.org>
+ *  All Rights Reserved.
+ * 
+ *  Version 1.13 10/22/2018
+ *
+ *************************************************************/
+
+@font-face { 
+    font-family: Roboto; 
+    font-weight: normal; 
+    src: url('../font/Roboto-Regular.ttf');
+}
+
+@font-face { 
+    font-family: Roboto; 
+    font-weight: bold; 
+    src: url('../font/Roboto-Bold.ttf');
+}
+
+.button {
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+}
+
+body {
+    background-color: #444;
+    margin: 0;
+    padding: 0;
+}
+
+#main {
+    width:100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0px;
+    top: 0;
+    left: 0;
+    overflow:hidden;
+}
+
+#logo {
+    position: absolute;
+    top:0;
+    right: 0;
+    z-index:1000;
+    background-color: rgba(255, 255, 255, 0.3);
+    padding: 3px;
+    padding-bottom: 0px;
+    padding-left: 6px;
+    padding-right: 6px;
+    margin: 0px;
+}
+
+#logoImg {
+        opacity: 0.8;
+}
+
+#map {
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+    padding: 0;
+}
+
+.alertIconExtreme {
+    height:12px;
+    color: #f99;
+    vertical-align:super;
+    text-shadow: 1px 1px 2px #000000;
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    font-size: 7pt;
+    font-weight: bold;
+    background: #777;
+    margin-left:8px;
+    margin-top:-18px;
+    padding-top:-23px;
+    padding-left:2px;
+    padding-right:2px;
+    padding-bottom:1px;
+}
+
+.alertIconSevere{
+    height:12px;
+    color: #ff9;
+    vertical-align:super;
+    text-shadow: 1px 1px 2px #000000;
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    font-size: 7pt;
+    font-weight: bold;
+    background: #777;
+    margin-left:8px;
+    margin-top:-18px;
+    padding-top:-23px;
+    padding-left:2px;
+    padding-right:2px;
+    padding-bottom:1px;
+}
+
+.alertIconModerate{
+    height:12px;
+    color: #8ff;
+    vertical-align:super;
+    text-shadow: 1px 1px 2px #000000;
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    font-size: 7pt;
+    font-weight: bold;
+    background: #777;
+    margin-left:8px;
+    margin-top:-18px;
+    padding-top:-23px;
+    padding-left:2px;
+    padding-right:2px;
+    padding-bottom:1px;
+}
+
+.alertIconMinor{
+    height:12px;
+    color: #9f9;
+    vertical-align:super;
+    text-shadow: 1px 1px 2px #000000;
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    font-size: 7pt;
+    font-weight: bold;
+    background: #777;
+    margin-left:8px;
+    margin-top:-18px;
+    padding-top:-23px;
+    padding-left:2px;
+    padding-right:2px;
+    padding-bottom:1px;
+}
+
+.alertIconUnknown{
+    height:12px;
+    color: #fff;
+    vertical-align:super;
+    text-shadow: 1px 1px 2px #000000;
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    font-size: 7pt;
+    font-weight: bold;
+    background: #777;
+    margin-left:8px;
+    margin-top:-18px;
+    padding-top:-23px;
+    padding-left:2px;
+    padding-right:2px;
+    padding-bottom:1px;
+}
+
+#hb {
+    position: absolute;
+    top:17px;
+    left: 120px;
+    height: 17px;
+    padding-left: 13px;
+    padding-right: 13px;
+    padding-top: 5px;
+    padding-bottom: 0px;
+    z-index:1000;
+    background-color:rgba(255,255,255,0.5);
+    color: #444;
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    font-size:7pt;
+}
+
+#reset_view {
+    position: absolute;
+    top:95px;
+    left: 20px;
+    z-index:1005;
+    cursor: pointer;
+}
+
+#set_default {
+    position: absolute;
+    top:125px;
+    left: 20px;
+    z-index:1005;
+    cursor: pointer;
+}
+
+#scrollBtn {
+    position:absolute;
+    top: 155px;
+    left:20px;
+    z-index:1005;
+    cursor: pointer;
+}
+
+#tableBtn {
+    position:absolute;
+    top: 185px;
+    left:20px;
+    z-index:1005;
+    cursor: pointer;
+}
+
+#aboutBtn {
+    position:absolute;
+    top:80px;
+    right:20px;
+    z-index:5005;
+    cursor: pointer;
+}
+
+#about_panel {
+  background: #fff;
+  box-shadow: 0 0 5px rgba(207,207,207,0.7);
+  color: #333;
+  position: absolute;
+  top: 110px;
+  right: 20px;
+  width: 500px;
+  max-height:350px;
+  z-index:5000;
+  display: none;
+}
+
+#about_text {
+  display:block;
+  margin-bottom: 6px;
+  margin-left:15px;
+  margin-right:15px;
+  width: 480px;
+  font-family:"Roboto","Trebuchet MS",sans-serif;
+  font-size:10pt;
+}
+
+h3 {
+    text-align: center
+}
+
+/*
+################
+     The Scroller formerly "console"
+################
+*/
+#console_bg {
+    position:absolute;
+    top: 50px;
+    left: 120px;
+    width: 33%;
+    bottom: 28px;
+    background: rgba(255,255,255,0.8);
+    z-index: 3000;
+    pointer-events:none;
+    display:none;
+    overflow: hidden;
+}
+
+#msgId {
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px;
+    text-align:center;
+    font-size: 8pt;
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    background: rgba(255,255,255,1);
+    color: #444;
+    z-index:1020;
+}
+
+#console_window {
+    position:absolute;
+    margin-top:28px;
+    margin-bottom: 20px;
+    margin-left: 15px;
+    margin-right: 15px;
+    height: 95%;
+    width: 90%;
+    z-index: 1012;
+    overflow: hidden;
+}
+
+#console_text {
+    position:absolute;
+    display: block;
+    width: 100%;
+    z-index: 1014;
+    color: #444;
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    font-size:12pt;
+}
+
+/*
+################
+     The List aka "table"
+################
+*/
+#table_window {
+    position:absolute;
+    background-color: rgba(0,0,0,0);
+    right: 20px;
+    max-width: 60%;
+    max-height: 50%;
+    bottom: 28px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    z-index: 2010;
+    overflow-y: auto;
+    color: #fff;
+    font-size:8pt;
+    pointer-events:all;
+    display: none;
+}
+
+#table_display {
+    position:absolute;
+    top: 50px;
+    left: 120px;
+    width: 31%;
+    bottom: 28px;
+    padding: 10px;
+    z-index: 1010;
+    pointer-events:none;
+    background-color: rgba(255,255,255,0.8);
+    color: #222;
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    font-size:12pt;
+    z-index: 3000;
+    overflow: hidden;
+    overflow-y: auto;
+    pointer-events:all;
+    display: none;
+}
+
+/*
+################
+    DataTables styles
+################
+*/
+table.dataTable.display, table.dataTable.order-column.stripe {
+    background-color: rgba(255,255,255,0.8);
+    border-spacing: 5px;
+    border-collapse: separate;
+}
+
+.dataTables_empty {
+    color: #333c;
+}
+
+table.dataTable.display tbody tr.odd > .sorting_1, table.dataTable.order-column.stripe tbody tr.odd > .sorting_1 {
+    background-color: transparent;
+}
+table.dataTable.display tbody tr.even > .sorting_1, table.dataTable.order-column.stripe tbody tr.even > .sorting_1 {
+    background-color: transparent;
+}
+
+table.dataTable.stripe tbody tr.odd, table.dataTable.display tbody tr.odd {
+    background-color: transparent;
+}
+table.dataTable.stripe tbody tr.even, table.dataTable.display tbody tr.even {
+    background-color: transparent;
+}
+
+table.dataTable.stripe tbody tr.odd, table.dataTable.display tbody tr.odd td {
+    color: #fff;
+    font-family: "Roboto","Trebuchet MS",sans-serif;
+    font-size: 9pt;
+    cursor: pointer;
+    padding: 0;
+}
+table.dataTable.stripe tbody tr.even, table.dataTable.display tbody tr.even td {
+    color: #fff;
+    font-family: "Roboto","Trebuchet MS",sans-serif;
+    font-size: 9pt;
+    cursor: pointer;
+    padding: 0;
+}
+
+.Extreme {
+    padding:5px;
+    padding-top:2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    background-color: #f88a;
+}
+
+.Severe {
+    padding:5px;
+    padding-top:2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    background-color: #ed6a;
+}
+
+.Moderate {
+    padding:5px;
+    padding-top:2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    background-color: #7eea;
+}
+
+.Minor {
+    padding:5px;
+    padding-top:2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    background-color: #9f9a;
+}
+
+.Unknown {
+    padding:5px;
+    padding-top:2px;
+    padding-bottom: 2px;
+    background-color: #999a;
+}
+
+.headline {
+    color: #333;
+    font-size: 10pt;
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    vertical-align: middle;
+    padding-right: 5px;
+}
+
+.response {
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    text-shadow: 1px 1px 0px #000000;
+    font-size: 9pt;
+    font-style: italic;
+    padding-right: 7px;
+}
+
+.origin {
+    color: #333;
+    font-size: 8pt;
+}
+
+.dataTables_wrapper table thead {
+    display:none;
+}
+
+.jconfirm-box  {
+    font-family:"Roboto","Trebuchet MS",sans-serif;
+    font-size: 10pt;
+}
+.jconfirm-buttons {
+    font-size: 10 pt;
+}

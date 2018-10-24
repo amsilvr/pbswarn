@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<!-- 
+/**************************************************************
+ *
+ *  Copyright (c) 2018 Public Broadcasting Service 
+ *  Contact: <warn@pbs.org>
+ *  All Rights Reserved.
+ * 
+ *  Version 1.13 10/22/2018
+ *
+ *************************************************************/
+-->
+
+<html lang="en">
+  <head>
+    <title>Realtime WEA Alert Map</title>
+    <meta charset="utf-8"/> 
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+      
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" />
+      
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="css/jquery.dataTables.css" />
+      
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.9"></script>
+      
+    <script src="js/moment.js"></script>
+      
+    <link rel="stylesheet" href="css/map.css">
+ 
+  </head>
+  <body >
+        <div id="main"> 
+
+      <!-- The Map itself -->
+      <div id="map" class="map" tabindex="0"></div>
+      
+      <div id="logo"><img src="img/WARN-Logo-Blk-PBS-Web-Sized.png" alt="P.B.S. WARN logo" id="logoImg"></div>
+
+      <!-- The heartbeat display -->
+      <div id="hb"></div>
+      
+      <!-- Reset View to Default -->
+      <button type="button" id="reset_view">Restore View</button>
+      <script>
+          $('#reset_view').click(function(){
+              resetView();
+          });
+          reset_view.onmouseover = function(){
+            reset_view.style.fontWeight = 'bold'; 
+          }
+          reset_view.onmouseout = function(){
+            reset_view.style.fontWeight = 'normal';
+          }
+      </script>
+      
+      <!-- Set Current View as Default -->
+      <button type="button" id="set_default">Save View</button>
+      <script>
+          $('#set_default').click(function(){
+              setDefaultViewToCurrent();
+          });
+          set_default.onmouseover = function(){
+            set_default.style.fontWeight = 'bold'; 
+          }
+          set_default.onmouseout = function(){
+            set_default.style.fontWeight = 'normal';
+          }
+      </script>
+      
+      <!-- Show Scroll -->
+      <button type="button" id="scrollBtn">Scanner</button>
+      <script>
+          scrollBtn.onmouseover = function(){
+            scrollBtn.style.fontWeight = 'bold'; 
+          }
+          scrollBtn.onmouseout = function(){
+            scrollBtn.style.fontWeight = 'normal';
+          }
+      </script>
+      
+      <!-- Set table of current messages -->
+      <button type="button" id="tableBtn">List</button>
+      <script>
+          tableBtn.onmouseover = function(){
+            tableBtn.style.fontWeight = 'bold'; 
+          }
+          tableBtn.onmouseout = function(){
+            tableBtn.style.fontWeight = 'normal';
+          }
+      </script>
+      
+        <!-- The Scroller display --> 
+        <div id="console_bg">
+            <div id="console_window">
+            <div id="console_text"></div>
+            </div>
+            <div id="msgId"></div>
+        </div>
+
+        <!-- The List table --> 
+        <div id="table_window">
+        <table id="table" class="display">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+        </div>
+
+        <!-- Individual message display-->
+        <div id="table_display"></div>
+      
+      <!-- The About This Map slideout -->
+      <button type="button" id="aboutBtn">About This Map</button>
+      <script>
+          $('#aboutBtn').click(function(){
+              if (about_panel.style.display == "none" || about_panel.style.display == "") {
+                  about_panel.style.display = "block"
+                  $('#aboutBtn').html('Hide Map Info');
+              } else {
+                  about_panel.style.display = "none"
+                  $('#aboutBtn').html('About This Map');
+              }
+          });
+          aboutBtn.onmouseover = function(){
+            aboutBtn.style.fontWeight = 'bold'; 
+          }
+          aboutBtn.onmouseout = function(){
+            aboutBtn.style.fontWeight = 'normal';
+          }
+      </script>
+      
+      <div id="about_panel">
+          <div id="about_text">
+              <h3>Current Wireless Emergency Alerts</h3>
+              <p>The latest Wireless Emergency Alerts (WEA) are broadcast nationwide by PBS, the Public Broadcasting Service, on behalf of the Federal Emergency Management Agency (FEMA) Integrated Public Alert and Warning System (IPAWS).</p>  
+              <p>Click on any individual alert marker to zoom in to the area affected.  Click on the alert area to see alert details.  Use your mouse or fingers to adjust the map view.  Click on 'Restore View' to revert to your previously saved default view.  Click "Save View" to set the current view as the default.  The Scanner is a continuous rotating display of active alerts.  The List displays active alerts, most recent at top.  Click on an item in the list to view details.  Both Scanner and List are active initially, but can be deactivated or reactivated using the labeled buttons.</p>
+              <p><i>This information is provided as a convenience for responders and the public.  It is not guaranteed to be complete or error-free. Geographic outlines reflect the orignators' input target areas, actual alert coverage depends on cellular system implementation and may vary.</i></p><p>For information or with comments email: <a href="mailto:warn@pbs.org">warn@pbs.org</a>
+          </div>
+      </div>
+         
+    </div> 
+      <!-- and launch the monitor -->
+      <script src="js/map.js"></script>
+      
+  </body>
+</html>
+
