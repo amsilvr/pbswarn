@@ -1,20 +1,20 @@
 ## CMAS Clean
 #browser()
-# if (require(tidyverse) == FALSE) {
-#   install.packages("tidyverse")
-# }
-# 
-# if (require(googlesheets) == FALSE) {
-#   install.packages("googlesheets")
-# }
-# 
-# if (require(sf) == FALSE) {
-#   install.packages("sf")
-# }
-# 
-# if (require(htmltab) == FALSE) {
-#   install.packages("htmltab")
-# }
+if (require(tidyverse) == FALSE) {
+  install.packages("tidyverse")
+}
+
+if (require(googlesheets) == FALSE) {
+  install.packages("googlesheets")
+}
+
+if (require(sf) == FALSE) {
+  install.packages("sf")
+}
+
+if (require(htmltab) == FALSE) {
+  install.packages("htmltab")
+}
 
 library(googlesheets)
 library(tidyverse)
@@ -152,7 +152,7 @@ load_fips <- function() {
       counties_sf <- map_counties() %>%
         as.data.frame() %>%
         transmute(areaname = paste(STUSPS, NAME),
-               GEOID = as.ordered(GEOID)) %>%
+               GEOID = as.character(GEOID)) %>%
           as.tibble() # %>%
 }
 
@@ -209,8 +209,9 @@ area_find <- function(area_list) {
 ## For areas that include only state names
 
 full_state <- function(areas_states) {
-  if (!exists("fips_lookup")) fips_lookup <- load_fips() %>%
-  #fips_lookup %>%
+  if (!exists("fips_lookup")) fips_lookup <- load_fips() 
+  
+  fips_lookup %>%
         mutate(STUSPS = str_match(areaname, "[A-Z]{2}")) %>%
         distinct() %>%
         right_join(areas_states) %>%
@@ -220,35 +221,29 @@ full_state <- function(areas_states) {
 }
 
 flatten_fips <- function(msg) {
-  #browser()
+ # browser()
   if (!exists("fips_lookup")) fips_lookup <- load_fips()
-  areas <- transmute(msg
-                     , msg_id = as.character(msg_id)
-                     , areas)
+  areas <- msg2 %>% 
+           select(msg_id, areas)
   #separate out alerts with full state areas, convert directly to fips
-  areas_states <- filter(areas, str_length(areas) == 2) %>%
-      transmute(msg_id, STUSPS = areas) %>%
+  areas_states <- areas %>% 
+      filter(str_length(areas) == 2) %>%
+      select(msg_id, STUSPS = areas) %>%
       full_state()
   #remove those alerts from the other areas
-  areas <- filter(areas, str_length(areas) > 2)
+  areas <- filter(areas, str_length(areas) > 2) %>% 
 
   # create a matrix of areas for each message id that has individual counties
-  areas <- tapply(areas$areas, area_find
-                  , INDEX = areas$msg_id
-                  , simplify = TRUE) %>%
-      as.data.frame.array() %>%
-      unlist(recursive = TRUE) %>%
-      as_tibble(validate = TRUE) %>%
-      rownames_to_column() %>%
-      transmute(msg_id = as.character(str_extract(rowname, "[[:alnum:]]{8}"))
-                                     , areaname = value) %>%
-  # Join messages with FIPS codes by matching areanames
-
-    left_join(fips_lookup) %>%
-    transmute(msg_id, areaname, GEOID = as.character(GEOID))
+            transmute(msg_id = msg_id,
+                  areaname = map(areas, area_find)) %>% 
+            unnest() %>% 
+            left_join(fips_lookup) %>%
+            transmute(msg_id, areaname, GEOID)  
 
   # Fix the 18 that don't seem to match for whatever reason
-  areas <-  mutate(areas, GEOID =
+          areas <- areas %>%   
+  
+          mutate(msg_id, GEOID =
              case_when(
                       grepl("MD Baltimore city"
                             ,areas$areaname, ignore.case = TRUE) ~ "24005",
@@ -268,8 +263,22 @@ flatten_fips <- function(msg) {
                       grepl("VA Roanoke city",areas$areaname) ~ "51770",
                       grepl("MN McLeod city",areas$areaname) ~ "27085",
                       grepl("AK Wrangell-Petersburg", areas$areaname) ~ "02275",
-                      
-                                           ## Account for accents in county names ##
+                      grepl("AK Prince of", areas$areaname) ~ "02198",
+                      grepl("AK Cordova", areas$areaname) ~ "02261",
+                      grepl("AK Koyukuk", areas$areaname) ~ "02290",
+                      grepl("AK Outer Ketchikan", areas$areaname) ~ "02130",
+                      grepl("AK Susitna", areas$areaname) ~ "02170",
+                      grepl("AZ Cochise city", areas$areaname) ~ "04003",
+                      grepl("AZ Pima city", areas$areaname) ~ "04019",
+                      grepl("IN Lagrange", areas$areaname) ~ "18087",
+                      grepl("MO vingston", areas$areaname) ~ "29117",
+                      grepl("WY Campbell city", areas$areaname) ~ "56005",
+                      grepl("CO Park", areas$areaname) ~ "08093",
+                      grepl("MO rid", areas$areaname) ~ "29143",
+                      grepl("AR Buren", areas$areaname) ~ "05141",
+
+                      ## Account for accents in county names ##
+                     
                       grepl("NM Dona Ana", areas$areaname) ~ "35013", ## Account for ñ
                       grepl("PR Anasco", areas$areaname) ~ "72011", ## Account for ñ
                       grepl("PR Catano", areas$areaname) ~ "72033", ## Account for ñ
@@ -285,9 +294,12 @@ flatten_fips <- function(msg) {
                       TRUE ~ areas$GEOID
                 )
       )    %>%
+    # Get rid of accidental duplicates
+            filter(!areaname == "MO New") %>% 
+            filter(!areaname == "AR Van") %>% 
     select(-areaname) %>%
     rbind(areas_states) %>%
-    mutate(GEOID = as.ordered(GEOID)) %>% 
+    #mutate(GEOID = as.ordered(GEOID)) %>% 
     return()
 }
 
@@ -329,7 +341,7 @@ tally_alerts <- function(df = msg2, fipsMsg = fips_msg,
         #filter(rec_time <= end) %>%
         left_join(fipsMsg) %>%
         select(msg_id, GEOID, type) %>%
-        mutate(GEOID = factor(GEOID, levels = levels(counties_sf$GEOID))) %>% 
+        #mutate(GEOID = factor(GEOID, levels = levels(counties_sf$GEOID))) %>% 
         group_by(GEOID, type) %>%
         tally() %>%
         rename(WEATYPE = type, WEANUM = n) %>%

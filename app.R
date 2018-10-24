@@ -1,39 +1,39 @@
 #### Setup ####
-# if (require(tidyverse) == FALSE) {
-#   install.packages("tidyverse")
-# }
-# 
-# if (require(googlesheets) == FALSE) {
-#   install.packages("googlesheets")
-# }
-# 
-# if (require(sf) == FALSE) {
-#   install.packages("sf")
-# }
-# 
-# if (require(htmltab) == FALSE) {
-#   install.packages("htmltab")
-# }
-# if (require(leaflet) == FALSE) {
-#   install.packages("leaflet")
-# }
-# 
-# if (require(DT) == FALSE) {
-#   install.packages("DT")
-# }
-# 
-# if (require(shiny) == FALSE) {
-#   install.packages("shiny")
-# }
-# if (require(shinydashboard) == FALSE) {
-#   install.packages("shinydashboard")
-# }
-# if (require(shinyjs) == FALSE) {
-#   install.packages("shinyjs")
-# }
-# if (require(shinycssloaders) == FALSE) {
-#   install.packages("shinycssloaders")
-# }
+if (require(tidyverse) == FALSE) {
+  install.packages("tidyverse")
+}
+
+if (require(googlesheets) == FALSE) {
+  install.packages("googlesheets")
+}
+
+if (require(sf) == FALSE) {
+  install.packages("sf")
+}
+
+if (require(htmltab) == FALSE) {
+  install.packages("htmltab")
+}
+if (require(leaflet) == FALSE) {
+  install.packages("leaflet")
+}
+
+if (require(DT) == FALSE) {
+  install.packages("DT")
+}
+
+if (require(shiny) == FALSE) {
+  install.packages("shiny")
+}
+if (require(shinydashboard) == FALSE) {
+  install.packages("shinydashboard")
+}
+if (require(shinyjs) == FALSE) {
+  install.packages("shinyjs")
+}
+if (require(shinycssloaders) == FALSE) {
+  install.packages("shinycssloaders")
+}
 
 library(tidyverse)
 library(lubridate)
@@ -50,13 +50,16 @@ library(shinycssloaders)
 #### Load Data ####
 
 if (!file.exists('data/wea_alerts.rda')) {
-    source("CMAS_Clean_shiny.R", echo = TRUE)
+    source("CMAS_Clean_shiny.R", echo = FALSE)
     load_vars()
     rm(list = c("all_cmas","ss_new"), envir = .GlobalEnv)
     save.image(file = "data/wea_alerts.rda") 
-    } 
-
-load(file = "data/wea_alerts.rda")
+} else{ 
+    load(file = "data/wea_alerts.rda",verbose = FALSE)
+    source("CMAS_Clean_shiny.R", echo = FALSE, verbose = FALSE,)
+    state_sf <<- map_states()
+    counties_sf <<- map_counties()   
+  }
 
 ui <- dashboardPage(title = "WEA Distribution by County",
                     skin = "black",
@@ -154,21 +157,37 @@ server <-function(input, output) {
 
     # Reactive variable fd containing (f)iltered (d)ata
     fd <- reactive({
+    #  browser()
        alert_tally <- tally_alerts(msg2, fips_msg)
        # Removing date selector 
                                    #start = input$dateRange[1],
                                    #end = input$dateRange[2])
        
+       qinst = rlang::sym(input$alertType)
+       
        allCounties <- left_join(counties_sf, alert_tally)
        
        allCounties[is.na(allCounties)] <- 0
        allCounties <- allCounties %>% 
-             select(1:6, inst = !!input$alertType, geometry) 
+             select(GEOID,
+                    NAME,
+                    description,
+                    STUSPS,
+                    AMBER,
+                    FlashFlood,
+                    Hurricane,
+                    Other,
+                    Tornado,
+                    Total,
+                    geometry) %>% 
+         mutate(inst = !!qinst)
        allCounties <- allCounties %>% 
              st_sf(sf_column_name = 'geometry')
        
        allCounties <- allCounties %>% 
-             st_transform('+proj=longlat +datum=WGS84')
+             st_transform('+proj=longlat +datum=WGS84') %>% 
+         
+        return()
 
     })
 
@@ -260,18 +279,19 @@ server <-function(input, output) {
     # Alert Type ####
 
     observeEvent(input$alertType, {
+     # browser()
       at <- input$alertType
       ac <- fd()
       # print(ac)
  #       bins and pallette
-        if (at == "Hurricane") {
-            bins <- c(0,1,2,4,8,max(ac$inst))
-        } else if (at == "Other") {
-            bins <- c(0,1,10,20,30,40,50,60,max(ac$inst))
-        } else bins <- c(unique(quantile(ac$inst,
-                                         probs = seq(0,1,by = .12),
-                                         type = 2)),max(ac$inst))
-        pal <- colorBin("YlOrRd",
+      if (at == "Hurricane") {
+        bins <- c(0,1,2,4,8,max(ac$inst))
+      } else if (at == "Other") {
+        bins <- c(0,1,2,4,8,16,32,64,max(ac$inst))
+      } else bins <- c(unique(quantile(ac$inst,
+                                       probs = seq(0,1,by = .12),
+                                       type = 2)),max(ac$inst))
+        pal <- colorBin("Blues",
                         domain = NULL,
                         bins = bins,
                         pretty = TRUE,
@@ -328,11 +348,11 @@ server <-function(input, output) {
         if (at == "Hurricane") {
             bins <- c(0,1,2,4,8,max(ac$inst))
         } else if (at == "Other") {
-            bins <- c(0,1,10,20,30,40,50,60,max(ac$inst))
+            bins <- c(0,1,2,4,8,16,32,64,max(ac$inst))
         } else bins <- c(unique(quantile(ac$inst,
                                          probs = seq(0,1,by = .12),
                                          type = 2)),max(ac$inst))
-        pal <- colorBin("YlOrRd",
+        pal <- colorBin("Blues",
                         domain = NULL,
                         bins = bins,
                         pretty = TRUE,
