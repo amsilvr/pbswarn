@@ -223,7 +223,7 @@ full_state <- function(areas_states) {
 flatten_fips <- function(msg) {
  # browser()
   if (!exists("fips_lookup")) fips_lookup <- load_fips()
-  areas <- msg2 %>% 
+  areas <- msg %>% 
            select(msg_id, areas)
   #separate out alerts with full state areas, convert directly to fips
   areas_states <- areas %>% 
