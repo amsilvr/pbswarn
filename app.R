@@ -1,39 +1,39 @@
 #### Setup ####
-if (require(tidyverse) == FALSE) {
-  install.packages("tidyverse")
-}
-
-if (require(googlesheets) == FALSE) {
-  install.packages("googlesheets")
-}
-
-if (require(sf) == FALSE) {
-  install.packages("sf")
-}
-
-if (require(htmltab) == FALSE) {
-  install.packages("htmltab")
-}
-if (require(leaflet) == FALSE) {
-  install.packages("leaflet")
-}
-
-if (require(DT) == FALSE) {
-  install.packages("DT")
-}
-
-if (require(shiny) == FALSE) {
-  install.packages("shiny")
-}
-if (require(shinydashboard) == FALSE) {
-  install.packages("shinydashboard")
-}
-if (require(shinyjs) == FALSE) {
-  install.packages("shinyjs")
-}
-if (require(shinycssloaders) == FALSE) {
-  install.packages("shinycssloaders")
-}
+# if (require(tidyverse) == FALSE) {
+#   install.packages("tidyverse")
+# }
+# 
+# if (require(googlesheets) == FALSE) {
+#   install.packages("googlesheets")
+# }
+# 
+# if (require(sf) == FALSE) {
+#   install.packages("sf")
+# }
+# 
+# if (require(htmltab) == FALSE) {
+#   install.packages("htmltab")
+# }
+# if (require(leaflet) == FALSE) {
+#   install.packages("leaflet")
+# }
+# 
+# if (require(DT) == FALSE) {
+#   install.packages("DT")
+# }
+# 
+# if (require(shiny) == FALSE) {
+#   install.packages("shiny")
+# }
+# if (require(shinydashboard) == FALSE) {
+#   install.packages("shinydashboard")
+# }
+# if (require(shinyjs) == FALSE) {
+#   install.packages("shinyjs")
+# }
+# if (require(shinycssloaders) == FALSE) {
+#   install.packages("shinycssloaders")
+# }
 
 library(tidyverse)
 library(lubridate)

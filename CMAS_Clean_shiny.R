@@ -1,20 +1,20 @@
 ## CMAS Clean
 #browser()
-if (require(tidyverse) == FALSE) {
-  install.packages("tidyverse")
-}
-
-if (require(googlesheets) == FALSE) {
-  install.packages("googlesheets")
-}
-
-if (require(sf) == FALSE) {
-  install.packages("sf")
-}
-
-if (require(htmltab) == FALSE) {
-  install.packages("htmltab")
-}
+# if (require(tidyverse) == FALSE) {
+#   install.packages("tidyverse")
+# }
+# 
+# if (require(googlesheets) == FALSE) {
+#   install.packages("googlesheets")
+# }
+# 
+# if (require(sf) == FALSE) {
+#   install.packages("sf")
+# }
+# 
+# if (require(htmltab) == FALSE) {
+#   install.packages("htmltab")
+# }
 
 library(googlesheets)
 library(tidyverse)
