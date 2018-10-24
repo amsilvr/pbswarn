@@ -334,21 +334,22 @@ tally_alerts <- function(df = msg2, fipsMsg = fips_msg,
                         end = NULL 
                         ) {
   #  browser()
-  #  if(is.null(start)) start = min(df$rec_time)
-  #  if(is.null(end)) end = max(df$rec_time)
+    if(is.null(start)) start = min(df$rec_time)
+    if(is.null(end)) end = max(df$rec_time)
     t <- df %>%
-        #filter(rec_time >= start) %>%
-        #filter(rec_time <= end) %>%
+        filter(rec_time >= start) %>%
+        filter(rec_time <= end) %>%
         left_join(fipsMsg) %>%
         select(msg_id, GEOID, type) %>%
         #mutate(GEOID = factor(GEOID, levels = levels(counties_sf$GEOID))) %>% 
         group_by(GEOID, type) %>%
         tally() %>%
         rename(WEATYPE = type, WEANUM = n) %>%
-        spread(WEATYPE, WEANUM, fill = "0",drop = TRUE, convert = TRUE) %>%
+        spread(WEATYPE, WEANUM, fill = "0",drop = FALSE, convert = TRUE) %>%
+        select(GEOID, AMBER, FlashFlood, Hurricane, Other, Tornado) %>% 
         mutate(Total = AMBER + FlashFlood
                + Hurricane + Other + Tornado)
-       
+
  #   t[is.na(t)] <- 0
     
     return(t)

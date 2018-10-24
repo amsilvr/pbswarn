@@ -56,7 +56,7 @@ if (!file.exists('data/wea_alerts.rda')) {
     save.image(file = "data/wea_alerts.rda") 
 } else{ 
     load(file = "data/wea_alerts.rda",verbose = FALSE)
-    source("CMAS_Clean_shiny.R", echo = FALSE, verbose = FALSE,)
+    source("CMAS_Clean_shiny.R", echo = FALSE, verbose = FALSE)
     state_sf <<- map_states()
     counties_sf <<- map_counties()   
   }
@@ -74,11 +74,11 @@ ui <- dashboardPage(title = "WEA Distribution by County",
             ## Date Range 
             
             # Commented out because of crashes when no alerts of a type are found
-            
-            # dateRangeInput(inputId = "dateRange", label = "Date Range"
-            #                ,start = min(msg2$rec_time)
-            #                ,end = max(msg2$rec_time)
-            #                ,format = 'M d, yyyy'),
+
+            dateRangeInput(inputId = "dateRange", label = "Date Range"
+                           ,start = min(msg2$rec_time)
+                           ,end = max(msg2$rec_time)
+                           ,format = 'M d, yyyy'),
             ## Alert Type
             selectInput(inputId = "alertType" , label = "Alert Type"
                         ,choices = c("Total" = "Total"
@@ -99,8 +99,10 @@ ui <- dashboardPage(title = "WEA Distribution by County",
             ),
             #### Instructions ####
             p("This map shows the number of Wireless Emergency Alert (WEA)
-              messages transmitted between May 20, 2014 and ",
+              messages transmitted between",
               ## Change the dates here to reflect the most recent alert ##
+              textOutput("first_alert", inline = TRUE),
+              " and ",
               textOutput("last_alert", inline = TRUE),
               " by the PBS WARN system to each county in the United States."),
             p("Please select a region or state from the menus above, or click on a county. To see a
@@ -158,10 +160,10 @@ server <-function(input, output) {
     # Reactive variable fd containing (f)iltered (d)ata
     fd <- reactive({
     #  browser()
-       alert_tally <- tally_alerts(msg2, fips_msg)
-       # Removing date selector 
-                                   #start = input$dateRange[1],
-                                   #end = input$dateRange[2])
+       alert_tally <- tally_alerts(msg2,
+                                   fips_msg,
+                                   start = input$dateRange[1],
+                                   end = input$dateRange[2])
        
        qinst = rlang::sym(input$alertType)
        
@@ -199,12 +201,20 @@ server <-function(input, output) {
     output$county_name <- renderText("Full Country")
     output$events <- renderText("Please select a state and alert type.
                                 Click on a county for a list of events in that county.")
-
-    # Most recent alert
-    output$last_alert <- renderText(paste0(month(max(msg2$rec_time),label = TRUE),' ',
-                                           day(max(msg2$rec_time)),', ',
-                                           year(max(msg2$rec_time))))
-
+    # Handle Dates in table and map
+    observeEvent(input$dateRange,{
+      # Most recent alert
+        output$last_alert <- renderText(paste0(month(max(input$dateRange[2]),label = TRUE),' ',
+                                               day(max(input$dateRange[2])),', ',
+                                               year(max(input$dateRange[2]))))
+    
+      # First alert selected
+        output$first_alert <- renderText(paste0(month(max(input$dateRange[1]),label = TRUE),' ',
+                                               day(max(input$dateRange[1])),', ',
+                                               year(max(input$dateRange[1]))))
+        
+        
+})
     # Base Map ####
     output$map <- renderLeaflet({
         leaflet() %>%
@@ -278,7 +288,10 @@ server <-function(input, output) {
     })
     # Alert Type ####
 
-    observeEvent(input$alertType, {
+    observeEvent({
+      input$alertType
+      input$dateRange
+      }, {
      # browser()
       at <- input$alertType
       ac <- fd()
@@ -339,7 +352,10 @@ server <-function(input, output) {
     })
 
     # Re-title the legend
-    observeEvent(input$alertType, {
+    observeEvent({
+      input$alertType
+      input$dateRange
+    }, {
       
       at <- input$alertType
       ac <- fd()
@@ -401,11 +417,12 @@ server <-function(input, output) {
         state = input$state
         quostate = quo(state)
         alert_type = input$alertType
-        # debugging console messages
-        message(paste0('selected county is ',county_events))
-        message(paste0('selected state is ',state))
-        message(paste0('alert type is ',alert_type))
+        # # debugging console messages
+        # message(paste0('selected county is ',county_events))
+        # message(paste0('selected state is ',state))
+        # message(paste0('alert type is ',alert_type))
         # print(input$dateRange) ## 
+        
         #### What are we looking to put in our table?
         #### Whole country or single county?
         if (is.null(county_events)) { ## All cases where we haven't selected a county
@@ -441,10 +458,10 @@ server <-function(input, output) {
             arrange(desc(rec_time)) %>%
             transmute(`Date` = rec_time
                       , `Message Text` = str_replace_all(wea, "\'", "")
-                      , `Affected Areas` = areas)# %>%
+                      , `Affected Areas` = areas) %>%
         ### Taking out date range inputs ###
-            # filter(Date >= min(input$dateRange)) %>%
-            # filter(Date <= max(input$dateRange) + 1)
+            filter(Date >= input$dateRange[1]) %>%
+            filter(Date <= input$dateRange[2])
 
 
         ###### Place Output into datatable ######
