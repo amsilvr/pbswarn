@@ -1,5 +1,5 @@
 #FROM r-base:3.4.0
-FROM rocker/shiny
+FROM rocker/shiny-verse
 
 RUN apt update -y \
 	&& apt install -y python2.7 \

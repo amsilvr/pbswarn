@@ -3,3 +3,5 @@ packrat/lib*/
 .httr-oauth
 pbswarn.Rproj
 data
+.Rhistory
+rsconnect/
